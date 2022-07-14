@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -22,9 +23,18 @@ public class Authority implements GrantedAuthority {
     @JsonIgnore
     private Long id;
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     private String authority;
 
+    public void setUser(User user) {
+        this.user = user;
+        //무한루프에 빠지지 않도록 체크
+        if (!user.getAuthorities().contains(this)) {
+            user.getAuthorities().add(this);
+            System.out.println("test3");
+            System.out.println(user.getAuthorities());
+        }
+    }
 }

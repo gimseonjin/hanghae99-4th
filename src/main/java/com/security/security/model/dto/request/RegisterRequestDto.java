@@ -10,6 +10,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -38,7 +40,7 @@ public class RegisterRequestDto {
         return User.builder()
                 .username(username)
                 .password(password)
-                .authorities(Set.of())
+                .authorities(new ArrayList<>())
                 .enabled(true)
                 .build();
     }

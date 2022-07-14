@@ -15,17 +15,16 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import javax.xml.bind.ValidationException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 @Service
+@Transactional
 public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private AuthorityRepository authorityRepository;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -36,7 +35,6 @@ public class UserService implements UserDetailsService {
                 ()->new UsernameNotFoundException(username));
     }
 
-    @Transactional
     public User save(RegisterRequestDto registerRequestDto) throws ValidationException {
 
         // 회원가입 요청 검증
@@ -69,10 +67,9 @@ public class UserService implements UserDetailsService {
     }
 
     private void addDefaultAuthority(User user){
-        Authority defaultAuthority = Authority.builder().authority("USER").build();
+        Authority defaultAuthority = Authority.builder()
+                .authority("USER").build();
 
-        Set<Authority> auth = Set.of(defaultAuthority);
-
-        user.setAuthorities(auth);
+        user.addAuthority(defaultAuthority);
     }
 }
