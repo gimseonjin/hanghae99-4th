@@ -5,7 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import java.util.Set;
 
@@ -14,9 +17,22 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 public class RegisterRequestDto {
-
+    @NotNull
+    @Size(min = 3)
+    @Pattern(regexp="[a-zA-Z1-9]{6,12}", message = "아이디는 최소 3자 이상, 영문과 숫자로만 조합해주세요")
     private String username;
+    @NotNull
     private String password;
+    @NotNull
+    private String password2;
+
+    public boolean isPwEqualToCheckPw(){
+        return password.equals(password2);
+    }
+
+    public boolean isContainIdInPw(){
+        return password.contains(username);
+    }
 
     public User toUser(){
         return User.builder()

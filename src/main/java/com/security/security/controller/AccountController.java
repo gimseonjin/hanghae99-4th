@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.xml.bind.ValidationException;
 
 @RestController
 @RequestMapping("/account")
@@ -17,8 +20,8 @@ public class AccountController {
     private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody RegisterRequestDto registerRequestDto){
-        User user = userService.save(registerRequestDto.toUser());
+    public ResponseEntity register(@RequestBody @Validated RegisterRequestDto registerRequestDto) throws ValidationException {
+        User user = userService.save(registerRequestDto);
         return new ResponseEntity(user, HttpStatus.CREATED);
     }
 }

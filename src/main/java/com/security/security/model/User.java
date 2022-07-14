@@ -31,9 +31,15 @@ public class User implements UserDetails {
     @JsonIgnore
     private String password;
     private boolean enabled;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name="user_id"))
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
     private Set<Authority> authorities;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Board> boards;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Comment> comments;
 
     @Override
     public boolean isAccountNonExpired() {
@@ -50,4 +56,19 @@ public class User implements UserDetails {
         return enabled;
     }
 
+    public void addBoard(Board board) {
+        this.boards.add(board);
+        //무한루프에 빠지지 않도록 체크
+        if (board.getUser() != this) {
+            board.setUser(this);
+        }
+    }
+
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+        //무한루프에 빠지지 않도록 체크
+        if (comment.getUser() != this) {
+            comment.setUser(this);
+        }
+    }
 }

@@ -2,6 +2,7 @@ package com.security.security.service;
 
 import com.security.security.model.Authority;
 import com.security.security.model.User;
+import com.security.security.model.dto.request.RegisterRequestDto;
 import com.security.security.repository.AuthorityRepository;
 import com.security.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import javax.xml.bind.ValidationException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -33,22 +36,43 @@ public class UserService implements UserDetailsService {
                 ()->new UsernameNotFoundException(username));
     }
 
-    public Optional<User> findUser(String email) {
-        return userRepository.findByUsername(email);
-    }
+    @Transactional
+    public User save(RegisterRequestDto registerRequestDto) throws ValidationException {
 
-    public User save(User user) {
-        String password = user.getPassword();
-        user.setPassword(passwordEncoder.encode(password));
+        // 회원가입 요청 검증
+        validRegisterRequestDto(registerRequestDto);
 
-        Authority defaultAuthority = authorityRepository.findByAuthority("USER")
-                .orElse(Authority.builder().authority("USER").build());
+        // Dto model 변환
+        User user = registerRequestDto.toUser();
 
-        Set<Authority> auth = Set.of(defaultAuthority);
+        // 비밀번호 암호화
+        passwordEncoding(user);
 
-        user.setAuthorities(auth);
+        // 기본 권한 - USER 매핑
+        addDefaultAuthority(user);
 
         return userRepository.save(user);
     }
 
+    private void validRegisterRequestDto(RegisterRequestDto registerRequestDto) throws ValidationException {
+
+        if(registerRequestDto.isContainIdInPw())
+            throw new ValidationException("아이디가 비빌번호에 포함되어 있습니다.");
+
+        if(!registerRequestDto.isPwEqualToCheckPw())
+            throw new ValidationException("두 비밀번호가 일치하지 않습니다.");
+    }
+
+    private void passwordEncoding(User user){
+        String password = user.getPassword();
+        user.setPassword(passwordEncoder.encode(password));
+    }
+
+    private void addDefaultAuthority(User user){
+        Authority defaultAuthority = Authority.builder().authority("USER").build();
+
+        Set<Authority> auth = Set.of(defaultAuthority);
+
+        user.setAuthorities(auth);
+    }
 }

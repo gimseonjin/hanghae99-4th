@@ -22,8 +22,9 @@ public class Authority implements GrantedAuthority {
     @JsonIgnore
     private Long id;
     @JsonIgnore
-    @Column(name="user_id")
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
     private String authority;
 
 }
