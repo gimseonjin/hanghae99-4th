@@ -21,7 +21,11 @@ public class AccountController {
 
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody @Validated RegisterRequestDto registerRequestDto) throws ValidationException {
-        User user = userService.save(registerRequestDto);
-        return new ResponseEntity(user, HttpStatus.CREATED);
+        try {
+            User user = userService.save(registerRequestDto);
+            return new ResponseEntity(user, HttpStatus.CREATED);
+        }catch (ValidationException e){
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 }

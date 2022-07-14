@@ -1,5 +1,6 @@
 package com.security.security.model.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.security.security.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 public class RegisterRequestDto {
     @NotNull
     @Size(min = 3)
-    @Pattern(regexp="[a-zA-Z1-9]", message = "아이디는 최소 3자 이상, 영문과 숫자로만 조합해주세요")
+    @Pattern(regexp="^[a-zA-Z0-9]*$", message = "아이디는 최소 3자 이상, 영문과 숫자로만 조합해주세요")
     private String username;
     @NotNull
     @Size(min = 4)
@@ -27,10 +28,12 @@ public class RegisterRequestDto {
     @NotNull
     private String password2;
 
+    @JsonIgnore
     public boolean isPwEqualToCheckPw(){
         return password.equals(password2);
     }
 
+    @JsonIgnore
     public boolean isContainIdInPw(){
         return password.contains(username);
     }

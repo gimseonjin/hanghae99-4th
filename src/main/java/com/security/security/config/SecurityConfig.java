@@ -61,6 +61,7 @@ public class SecurityConfig{
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests()
+                .antMatchers("/account/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
