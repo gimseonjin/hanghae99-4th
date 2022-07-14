@@ -1,7 +1,15 @@
-
 spring:
-  devtools:
-    livereload:
-      enabled: true
-    restart:
-      enabled: true
+  servlet:
+    session:
+      timeout: 60s
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/hanghae?serverTimezone=UTC&characterEncoding=UTF-8
+    username: root
+    password:
+
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: update
