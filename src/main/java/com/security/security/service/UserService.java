@@ -3,10 +3,8 @@ package com.security.security.service;
 import com.security.security.model.Authority;
 import com.security.security.model.User;
 import com.security.security.model.dto.request.RegisterRequestDto;
-import com.security.security.repository.AuthorityRepository;
 import com.security.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,10 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import javax.xml.bind.ValidationException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Service
 @Transactional
@@ -59,6 +53,10 @@ public class UserService implements UserDetailsService {
 
         if(!registerRequestDto.isPwEqualToCheckPw())
             throw new ValidationException("두 비밀번호가 일치하지 않습니다.");
+
+        if(userRepository.findByUsername(registerRequestDto.getUsername()).isPresent())
+            throw new ValidationException("중복된 유저네임 입니다.");
+
     }
 
     private void passwordEncoding(User user){
